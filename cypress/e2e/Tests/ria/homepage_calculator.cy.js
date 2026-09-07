@@ -1,6 +1,9 @@
 describe('homepage calculator', () => {
     beforeEach(() => {
+        cy.clearCookies();
+        cy.clearLocalStorage();
         cy.visit('https://www.riamoneytransfer.com/en-cl/');
+        cy.dismissCookieBanner();
     });
 
 
@@ -26,6 +29,7 @@ describe('homepage calculator', () => {
 
         // Country first, then amount (reset the page to test the reverse order)
         cy.visit('https://www.riamoneytransfer.com/en-cl/');
+        cy.dismissCookieBanner();
         selectHaiti();
         cy.get('#amount-from').clear().type('25000').should('have.value', '25000');
         assertConversion();
@@ -85,7 +89,8 @@ describe('homepage calculator', () => {
             .should(($input) => expect(parseFloat($input.val())).to.be.greaterThan(0))
             .invoke('val')
             .then((initialValue) => {
-                cy.get('#amount-from').clear().type('50000');
+                cy.get('#amount-from').clear();
+                cy.get('#amount-from').type('50000');
                 cy.get('#amount-to').should(($input) => {
                     expect($input.val()).not.to.eq(initialValue);
                 });
