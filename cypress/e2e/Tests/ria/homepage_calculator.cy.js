@@ -62,19 +62,19 @@ describe('homepage calculator', () => {
     });
 
     it('TC04: Should handle numeric edge-case formats in the Amount field (decimal, leading zeros, comma and maximum limit)', () => {
-        cy.get('#amount-from').clear().type('25000.50').should('have.value', '25000.50');
+        cy.get('#amount-from').type('{selectall}{backspace}25000.50').should('have.value', '25000.50');
 
-        cy.get('#amount-from').clear().type('0025000');
+        cy.get('#amount-from').type('{selectall}{backspace}0025000');
         cy.get('#amount-to').should(($input) => {
             expect(parseFloat($input.val())).to.be.greaterThan(0);
         });
 
-        cy.get('#amount-from').clear().type('25,000').should('have.value', '25,000');
+        cy.get('#amount-from').type('{selectall}{backspace}25,000').should('have.value', '25,000');
         cy.get('#amount-to').should(($input) => {
             expect(parseFloat($input.val())).to.be.greaterThan(0);
         });
 
-        cy.get('#amount-from').clear().type('99999999999');
+        cy.get('#amount-from').type('{selectall}{backspace}99999999999');
         cy.contains('Maximum is 10,000,000 CLP').should('be.visible');
         cy.contains('Unable to get rates. Please try again.').should('be.visible');
     });
