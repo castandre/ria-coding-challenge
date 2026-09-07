@@ -23,3 +23,14 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('dismissCookieBanner', () => {
+    cy.wait(500);
+    cy.get('body').then(($body) => {
+        const acceptButton = $body.find('[analytics-name="consent-manager-allow-all-cookies"]');
+        if (acceptButton.length) {
+            cy.wrap(acceptButton).click();
+            cy.get('[analytics-name="consent-manager-allow-all-cookies"]').should('not.exist');
+        }
+    });
+});
