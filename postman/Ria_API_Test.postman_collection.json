@@ -1,0 +1,81 @@
+{
+  "info": {
+    "_postman_id": "2a5051c0-ce31-46e8-9028-fe0d74430081",
+    "name": "Ria API_Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30345349"
+  },
+  "item": [
+    {
+      "name": "Validation-GET",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\n\npm.test(\"All posts have non-empty title and body\", function () {\n    const posts = pm.response.json();\n\n    posts.forEach((post) => {\n        pm.expect(post.title).to.be.a('string').and.not.empty;\n        pm.expect(post.body).to.be.a('string').and.not.empty;\n    });\n});\n\n\npm.test(\"No title or body contains the word 'zombie'\", function () {\n    const posts = pm.response.json();\n\n    posts.forEach((post) => {\n        pm.expect(post.title.toLowerCase()).to.not.include('zombie');\n        pm.expect(post.body.toLowerCase()).to.not.include('zombie');\n    });\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts/",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "posts",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation-POST",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 or 201\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r\n});\r\n\r\npm.test(\"Topping contains bacon, cheese and mushroom\", function () {\r\n    const responseBody = pm.response.json();\r\n    const topping = responseBody.json.topping;\r\n\r\n    pm.expect(topping).to.include.members(['bacon', 'cheese', 'mushroom']);\r\n});\r\n\r\npm.test(\"Topping does not contain chicken\", function () {\r\n    const responseBody = pm.response.json();\r\n    const topping = responseBody.json.topping;\r\n\r\n    pm.expect(topping).to.not.include('chicken');\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n\"student\": \"Tim Allen\",\r\n\"email_address\": \"tim@homeimprovement.com\",\r\n\"phone\": \"(408) 8674530\",\r\n\"current_grade\": \"B+\",\r\n\"topping\": [\r\n\"bacon\",\r\n\"cheese\",\r\n\"mushroom\"\r\n]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://httpbin.org/post",
+          "protocol": "https",
+          "host": [
+            "httpbin",
+            "org"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
