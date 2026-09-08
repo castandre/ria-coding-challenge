@@ -15,7 +15,7 @@ class CalculatorPage {
     }
 
     sendToButton() {
-        return cy.get('[type="button"]').eq(3);
+        return cy.get('[aria-label="Select Destination"]');
     }
 
     startTransferLink() {
