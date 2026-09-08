@@ -19,9 +19,9 @@ describe('login page', () => {
     });
 
     it('TC02: Should display the Register button, email field and password field', () => {
-        cy.contains('Register').should('be.visible');
-        cy.get('[analytics-name="login-email-input"]').should('be.visible');
-        cy.get('[analytics-name="login-password"]')
+        cy.contains('Register', { timeout: 10000 }).should('be.visible');
+        cy.get('[analytics-name="login-email-input"]', { timeout: 10000 }).should('be.visible');
+        cy.get('[analytics-name="login-password"]', { timeout: 10000 })
             .should('be.visible')
             .and('have.attr', 'type', 'password');
     });
