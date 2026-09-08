@@ -1,6 +1,9 @@
 class LoginPage {
     visit(url) {
+        cy.clearCookies();
+        cy.clearLocalStorage();
         cy.visit(url);
+        cy.dismissCookieBanner();
     }
 
     registerLink() {
@@ -16,7 +19,6 @@ class LoginPage {
     }
 
     clickRegister() {
-        cy.dismissCookieBanner();
         this.registerLink().click();
     }
 }
