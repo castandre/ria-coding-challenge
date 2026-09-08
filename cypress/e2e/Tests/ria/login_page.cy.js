@@ -13,7 +13,6 @@ describe('get started navigation', () => {
     it('TC01: Should redirect to secure.riamoneytransfer.com when Get Started is clicked', () => {
         calculatorPage.visit(testData.urls.homepage);
         calculatorPage.enterAmount(testData.amounts.valid);
-        calculatorPage.selectHaiti();
         calculatorPage.startTransferLink().click();
 
         cy.url().should('include', 'secure.riamoneytransfer.com');

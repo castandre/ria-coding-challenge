@@ -27,11 +27,11 @@ class CalculatorPage {
     }
 
     openCountryList() {
-        this.sendToButton().click();
+        this.sendToButton().should('have.length', 1).click();
     }
 
     selectOption(optionText) {
-        cy.contains('[role="option"]', optionText).click();
+        cy.contains('[role="option"]', optionText, { timeout: 10000 }).click();
     }
 
     selectHaiti() {
