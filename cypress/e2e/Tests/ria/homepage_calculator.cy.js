@@ -1,99 +1,70 @@
+import calculatorPage from '../../../support/pageObjects/CalculatorPage';
+
 describe('homepage calculator', () => {
-    beforeEach(() => {
-        cy.clearCookies();
-        cy.clearLocalStorage();
-        cy.visit('https://www.riamoneytransfer.com/en-cl/');
-        cy.dismissCookieBanner();
+    let testData;
+
+    before(() => {
+        cy.fixture('testData').then((data) => {
+            testData = data;
+        });
     });
 
+    beforeEach(() => {
+        calculatorPage.visit(testData.urls.homepage);
+    });
 
     it('TC01: Should convert 25000 CLP to HTG when sending to Haiti, regardless of field order', () => {
-        const selectHaiti = () => {
-            cy.get('[type="button"]').eq(3).click();
-            cy.contains('[role="option"]', 'Haiti').click();
-            cy.contains('[role="option"]', 'Haitian Gourde').click();
-        };
+        calculatorPage.convertAmountThenCountry(testData.amounts.valid, testData.countries.haitiCurrencyCode);
 
-        const assertConversion = () => {
-            cy.get('#amount-to').should(($input) => {
-                expect(parseFloat($input.val())).to.be.greaterThan(0);
-            });
-            cy.contains('HTG').should('be.visible');
-            cy.contains('a', 'Start your transfer').should('be.visible');
-        };
-
-        // Amount first, then country
-        cy.get('#amount-from').clear().type('25000').should('have.value', '25000');
-        selectHaiti();
-        assertConversion();
-
-        // Country first, then amount (reset the page to test the reverse order)
-        cy.visit('https://www.riamoneytransfer.com/en-cl/');
-        cy.dismissCookieBanner();
-        selectHaiti();
-        cy.get('#amount-from').clear().type('25000').should('have.value', '25000');
-        assertConversion();
+        calculatorPage.visit(testData.urls.homepage);
+        calculatorPage.convertCountryThenAmount(testData.amounts.valid, testData.countries.haitiCurrencyCode);
     });
 
     it('TC02: Should show a validation error for invalid Amount input (letters, symbols, negative or empty)', () => {
-        const invalidAmounts = ['abcde', '@#$%', '-100', ''];
-
-        invalidAmounts.forEach((value) => {
-            cy.get('#amount-from').clear();
-            if (value) {
-                cy.get('#amount-from').type(value);
-            }
-            cy.contains('Please enter a valid amount').should('be.visible');
+        testData.invalidAmounts.forEach((value) => {
+            calculatorPage.enterAmount(value);
+            cy.contains(testData.messages.invalidAmount).should('be.visible');
         });
     });
 
     it('TC03: "Send to" dropdown should feature country options and update the currency label on selection', () => {
-        cy.get('[type="button"]').eq(3).click();
+        calculatorPage.openCountryList();
         cy.get('[role="option"]').should('have.length.greaterThan', 1);
-        cy.contains('[role="option"]', 'Haiti').should('be.visible');
+        cy.contains('[role="option"]', testData.countries.haitiOption).should('be.visible');
 
-        cy.contains('[role="option"]', 'Haiti').click();
-        cy.contains('[role="option"]', 'Haitian Gourde').click();
-        cy.contains('HTG').should('be.visible');
+        calculatorPage.selectOption(testData.countries.haitiOption);
+        calculatorPage.selectOption(testData.countries.haitiCurrencyOption);
+        cy.contains(testData.countries.haitiCurrencyCode).should('be.visible');
 
-        cy.get('[type="button"]').eq(3).click();
-        cy.contains('[role="option"]', 'Dominican Republic').click();
-        cy.contains('USD').should('be.visible');
+        calculatorPage.openCountryList();
+        calculatorPage.selectOption(testData.countries.secondCountry);
+        cy.contains(testData.countries.secondCurrencyCode).should('be.visible');
     });
 
     it('TC04: Should handle numeric edge-case formats in the Amount field (decimal, leading zeros, comma and maximum limit)', () => {
-        cy.get('#amount-from').type('{selectall}{backspace}25000.50').should('have.value', '25000.50');
+        calculatorPage.enterAmount(testData.amounts.decimal);
+        calculatorPage.amountFromInput().should('have.value', testData.amounts.decimal);
 
-        cy.get('#amount-from').type('{selectall}{backspace}0025000');
-        cy.get('#amount-to').should(($input) => {
-            expect(parseFloat($input.val())).to.be.greaterThan(0);
-        });
+        calculatorPage.enterAmount(testData.amounts.leadingZeros);
+        calculatorPage.assertConvertedAmountIsPositive();
 
-        cy.get('#amount-from').type('{selectall}{backspace}25,000').should('have.value', '25,000');
-        cy.get('#amount-to').should(($input) => {
-            expect(parseFloat($input.val())).to.be.greaterThan(0);
-        });
+        calculatorPage.enterAmount(testData.amounts.comma);
+        calculatorPage.amountFromInput().should('have.value', testData.amounts.comma);
+        calculatorPage.assertConvertedAmountIsPositive();
 
-        cy.get('#amount-from').type('{selectall}{backspace}99999999999');
-        cy.contains('Maximum is 10,000,000 CLP').should('be.visible');
-        cy.contains('Unable to get rates. Please try again.').should('be.visible');
+        calculatorPage.enterAmount(testData.amounts.excessive);
+        cy.contains(testData.messages.maxAmount).should('be.visible');
+        cy.contains(testData.messages.ratesUnavailable).should('be.visible');
     });
 
     it('TC05: Should recalculate the converted amount when the Amount field is updated', () => {
-        cy.get('#amount-from').clear().type('25000');
-        cy.get('[type="button"]').eq(3).click();
-        cy.contains('[role="option"]', 'Haiti').click();
-        cy.contains('[role="option"]', 'Haitian Gourde').click();
+        calculatorPage.enterAmount(testData.amounts.valid);
+        calculatorPage.selectHaiti();
+        calculatorPage.assertConvertedAmountIsPositive();
 
-        cy.get('#amount-to')
-            .should(($input) => expect(parseFloat($input.val())).to.be.greaterThan(0))
-            .invoke('val')
-            .then((initialValue) => {
-                cy.get('#amount-from').clear();
-                cy.get('#amount-from').type('50000');
-                cy.get('#amount-to').should(($input) => {
-                    expect($input.val()).not.to.eq(initialValue);
-                });
-            });
+        calculatorPage.getConvertedAmount().then((initialValue) => {
+            calculatorPage.enterAmount(testData.amounts.updated);
+            calculatorPage.assertConvertedAmountChanged(initialValue);
+        });
     });
 });

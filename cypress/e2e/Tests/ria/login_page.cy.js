@@ -1,35 +1,48 @@
+import calculatorPage from '../../../support/pageObjects/CalculatorPage';
+import loginPage from '../../../support/pageObjects/LoginPage';
+
 describe('get started navigation', () => {
+    let testData;
+
+    before(() => {
+        cy.fixture('testData').then((data) => {
+            testData = data;
+        });
+    });
+
     it('TC01: Should redirect to secure.riamoneytransfer.com when Get Started is clicked', () => {
-        cy.visit('https://www.riamoneytransfer.com/en-cl/');
-
-        cy.get('#amount-from').clear().type('25000');
-        cy.get('[type="button"]').eq(3).click();
-        cy.contains('[role="option"]', 'Haiti').click();
-        cy.contains('[role="option"]', 'Haitian Gourde').click();
-
-        cy.contains('a', 'Start your transfer').click();
+        calculatorPage.visit(testData.urls.homepage);
+        calculatorPage.enterAmount(testData.amounts.valid);
+        calculatorPage.selectHaiti();
+        calculatorPage.startTransferLink().click();
 
         cy.url().should('include', 'secure.riamoneytransfer.com');
     });
 });
 
 describe('login page', () => {
+    let testData;
+
+    before(() => {
+        cy.fixture('testData').then((data) => {
+            testData = data;
+        });
+    });
+
     beforeEach(() => {
-        cy.visit('https://secure.riamoneytransfer.com/login');
+        loginPage.visit(testData.urls.login);
     });
 
     it('TC02: Should display the Register button, email field and password field', () => {
-        cy.contains('Register', { timeout: 10000 }).should('be.visible');
-        cy.get('[analytics-name="login-email-input"]', { timeout: 10000 }).should('be.visible');
-        cy.get('[analytics-name="login-password"]', { timeout: 10000 })
+        loginPage.registerLink().should('be.visible');
+        loginPage.emailInput().should('be.visible');
+        loginPage.passwordInput()
             .should('be.visible')
             .and('have.attr', 'type', 'password');
     });
 
     it('TC03: Should redirect to the country selection page when Register is clicked', () => {
-        cy.dismissCookieBanner();
-        cy.contains('Register').click();
-
+        loginPage.clickRegister();
         cy.url().should('include', '/registration');
     });
 });

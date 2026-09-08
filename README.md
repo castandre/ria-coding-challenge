@@ -1,6 +1,6 @@
 # RIA Money Transfer — E2E Test Automation Challenge
 
-Cypress E2E test suite for [riamoneytransfer.com](https://www.riamoneytransfer.com/), built as a QA automation take-home challenge. Covers two areas: the Ria Calculator on the homepage, and the account registration flow on the secure site.
+Cypress E2E test suite for [riamoneytransfer.com](https://www.riamoneytransfer.com/). Covers two areas: the Ria Calculator on the homepage, and the account registration flow on the secure site.
 
 ## Tech stack
 
@@ -9,6 +9,8 @@ Cypress E2E test suite for [riamoneytransfer.com](https://www.riamoneytransfer.c
 
 ## Project structure
 
+Tests follow the **Page Object Model**: selectors and page interactions live in `support/pageObjects/`, test data lives in `fixtures/testData.json`, and the spec files under `Tests/ria/` only describe the "what" of each test case.
+
 ```
 cypress/
   e2e/
@@ -16,11 +18,17 @@ cypress/
       ria/
         homepage_calculator.cy.js   # Part 1: Ria Calculator tests
         login_page.cy.js            # Part 2: Get Started -> secure site tests
+  fixtures/
+    testData.json                   # amounts, countries, messages and URLs used across tests
   support/
     commands.js                     # custom commands (e.g. cy.dismissCookieBanner())
+    pageObjects/
+      CalculatorPage.js              # selectors + actions for the Ria Calculator
+      LoginPage.js                   # selectors + actions for the login/registration flow
 coverage/
   challenge/                        # original task requirements, for reference
-evidence/                           # screenshots of passing test runs
+evidence/                           # screenshots and videos of test runs
+postman/                            # exported Postman collection for the API tests
 RIA_Test_Cases_Final.xlsx           # test case documentation (Part 1 and Part 2 sheets)
 ```
 

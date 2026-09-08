@@ -1,0 +1,27 @@
+{
+    "urls": {
+        "homepage": "https://www.riamoneytransfer.com/en-cl/",
+        "login": "https://secure.riamoneytransfer.com/login"
+    },
+    "amounts": {
+        "valid": "25000",
+        "updated": "50000",
+        "decimal": "25000.50",
+        "leadingZeros": "0025000",
+        "comma": "25,000",
+        "excessive": "99999999999"
+    },
+    "invalidAmounts": ["abcde", "@#$%", "-100", ""],
+    "countries": {
+        "haitiOption": "Haiti",
+        "haitiCurrencyOption": "Haitian Gourde",
+        "haitiCurrencyCode": "HTG",
+        "secondCountry": "Dominican Republic",
+        "secondCurrencyCode": "USD"
+    },
+    "messages": {
+        "invalidAmount": "Please enter a valid amount",
+        "maxAmount": "Maximum is 10,000,000 CLP",
+        "ratesUnavailable": "Unable to get rates. Please try again."
+    }
+}

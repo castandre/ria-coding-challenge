@@ -15,3 +15,9 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// The site under test occasionally throws uncaught JS errors from third-party
+// scripts (analytics, ads, the cookie consent manager) during page transitions.
+// These are unrelated to the flows we're testing, so we don't want them to fail
+// otherwise-passing tests or interrupt hooks in unrelated suites.
+Cypress.on('uncaught:exception', () => false);
